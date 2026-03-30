@@ -1,61 +1,67 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coronados de Gloria - App</title>
+    <title>Coronados de Gloria</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; background-color: #111827; color: #f3f4f6; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         .modal, .tab-content { transition: opacity 0.3s ease; }
-        .tab-btn.active, .caja-tab-btn.active { border-color: #2563eb; color: #2563eb; background-color: #dbeafe; }
+        .tab-btn.active, .caja-tab-btn.active { border-color: #f59e0b; color: #f59e0b; background-color: rgba(245, 158, 11, 0.1); }
         .btn-loading { position: relative; pointer-events: none; color: transparent !important; }
         .btn-loading::after {
             content: ''; position: absolute; left: 50%; top: 50%; width: 20px; height: 20px;
-            margin-left: -10px; margin-top: -10px; border: 2px solid #fff; border-top-color: transparent;
+            margin-left: -10px; margin-top: -10px; border: 2px solid #111827; border-top-color: transparent;
             border-radius: 50%; animation: spin 0.6s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        #global-loader { background-color: rgba(249, 250, 251, 0.9); backdrop-filter: blur(4px); }
+        #global-loader { background-color: rgba(17, 24, 39, 0.95); backdrop-filter: blur(8px); }
         .hide-sensitive .sensitive-data { filter: blur(6px); user-select: none; }
         .kpi-card { transition: transform 0.2s, box-shadow 0.2s; }
-        .kpi-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
+        .kpi-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3); }
+        
+        /* Custom styles for dark inputs */
+        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-900">
+<body class="bg-gray-900 text-gray-200">
     <!-- Global loader for initial data fetching -->
     <div id="global-loader" class="fixed inset-0 z-50 flex flex-col items-center justify-center">
-        <div class="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-        <p id="loader-text" class="mt-4 text-lg font-semibold text-gray-700">Cargando Centro de Comando...</p>
+        <div class="w-16 h-16 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+        <p id="loader-text" class="mt-6 text-lg font-bold text-amber-500 tracking-widest uppercase">Forjando la Gloria...</p>
     </div>
 
     <!-- Main application container -->
     <div id="app-container" class="container mx-auto p-4 md:p-8 max-w-7xl opacity-0 transition-opacity duration-500">
-        <header class="relative text-center mb-8">
-            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">Coronados de Gloria</h1>
-            <p class="text-gray-600 mt-2">Tu gimnasio, bajo control total.</p>
-            <button id="toggle-sensitive-btn" title="Ocultar/Mostrar datos sensibles" class="absolute top-0 right-0 p-2 text-gray-500 hover:text-blue-600 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <header class="relative text-center mb-10 mt-4">
+            <h1 class="text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-500 to-yellow-600 tracking-tight uppercase drop-shadow-sm" style="font-family: 'Arial Black', Impact, sans-serif;">
+                Coronados de Gloria
+            </h1>
+            <p class="text-gray-400 mt-3 font-bold tracking-[0.2em] text-sm md:text-base">ENTRENAMIENTO INTELIGENTE</p>
+            
+            <button id="toggle-sensitive-btn" title="Ocultar/Mostrar datos sensibles" class="absolute top-0 right-0 p-3 text-gray-500 hover:text-amber-500 bg-gray-800 rounded-full shadow-lg border border-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500">
                 <svg id="eye-open-icon" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                 <svg id="eye-closed-icon" class="h-6 w-6 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 .946-3.11 3.558-5.448 6.84-6.195M15 12a3 3 0 11-6 0 3 3 0 016 0zm6.166-3.166a10.038 10.038 0 012.374 3.166C20.268 16.057 16.477 19 12 19c-1.353 0-2.65-.24-3.855-.684M3 3l18 18" /></svg>
             </button>
         </header>
 
         <!-- Tab navigation -->
-        <div class="mb-6">
-            <div class="border-b border-gray-200">
+        <div class="mb-8">
+            <div class="border-b border-gray-700">
                 <nav class="-mb-px flex space-x-2 sm:space-x-4 overflow-x-auto no-scrollbar" aria-label="Tabs">
-                    <button data-tab="dashboard" class="tab-btn active shrink-0 py-3 px-4 sm:px-5 border-b-2 font-medium text-sm">Panel</button>
-                    <button data-tab="clientes" class="tab-btn text-gray-500 hover:text-gray-700 shrink-0 py-3 px-4 sm:px-5 border-b-2 font-medium text-sm border-transparent">Clientes</button>
-                    <button data-tab="asistencias" class="tab-btn text-gray-500 hover:text-gray-700 shrink-0 py-3 px-4 sm:px-5 border-b-2 font-medium text-sm border-transparent">Asistencias</button>
-                    <button data-tab="caja" class="tab-btn text-gray-500 hover:text-gray-700 shrink-0 py-3 px-4 sm:px-5 border-b-2 font-medium text-sm border-transparent">Caja</button>
-                    <button data-tab="servicios" class="tab-btn text-gray-500 hover:text-gray-700 shrink-0 py-3 px-4 sm:px-5 border-b-2 font-medium text-sm border-transparent">Servicios</button>
-                    <button data-tab="config" class="tab-btn text-gray-500 hover:text-gray-700 shrink-0 py-3 px-4 sm:px-5 border-b-2 font-medium text-sm border-transparent">Configuración</button>
-                    <button data-tab="estadisticas" class="tab-btn text-gray-500 hover:text-gray-700 shrink-0 py-3 px-4 sm:px-5 border-b-2 font-medium text-sm border-transparent">Estadísticas</button>
+                    <button data-tab="dashboard" class="tab-btn active shrink-0 py-3 px-4 sm:px-5 border-b-2 font-medium text-sm transition-colors text-gray-400 hover:text-gray-200">Panel</button>
+                    <button data-tab="clientes" class="tab-btn text-gray-400 hover:text-gray-200 shrink-0 py-3 px-4 sm:px-5 border-b-2 font-medium text-sm border-transparent transition-colors">Clientes</button>
+                    <button data-tab="asistencias" class="tab-btn text-gray-400 hover:text-gray-200 shrink-0 py-3 px-4 sm:px-5 border-b-2 font-medium text-sm border-transparent transition-colors">Asistencias</button>
+                    <button data-tab="caja" class="tab-btn text-gray-400 hover:text-gray-200 shrink-0 py-3 px-4 sm:px-5 border-b-2 font-medium text-sm border-transparent transition-colors">Caja</button>
+                    <button data-tab="servicios" class="tab-btn text-gray-400 hover:text-gray-200 shrink-0 py-3 px-4 sm:px-5 border-b-2 font-medium text-sm border-transparent transition-colors">Servicios</button>
+                    <button data-tab="config" class="tab-btn text-gray-400 hover:text-gray-200 shrink-0 py-3 px-4 sm:px-5 border-b-2 font-medium text-sm border-transparent transition-colors">Configuración</button>
+                    <button data-tab="estadisticas" class="tab-btn text-gray-400 hover:text-gray-200 shrink-0 py-3 px-4 sm:px-5 border-b-2 font-medium text-sm border-transparent transition-colors">Estadísticas</button>
                 </nav>
             </div>
         </div>
@@ -64,10 +70,10 @@
     </div>
 
     <!-- Modals -->
-    <div id="message-modal" class="modal fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4"><div class="bg-white p-6 rounded-lg shadow-xl text-center max-w-sm"><p id="modal-message-text" class="text-lg"></p><button id="close-message-modal" class="mt-4 w-full bg-blue-600 text-white px-4 py-2 rounded-lg">Cerrar</button></div></div>
-    <div id="form-modal" class="modal fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-40 overflow-y-auto p-4"><div class="bg-white p-6 rounded-2xl shadow-xl w-full max-w-2xl m-auto"><h2 id="form-modal-title" class="text-2xl font-bold text-gray-800 mb-6"></h2><form id="main-form" class="space-y-4"></form></div></div>
-    <div id="confirm-modal" class="modal fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4"><div class="bg-white p-6 rounded-lg shadow-xl text-center max-w-sm"><p id="confirm-modal-text" class="text-lg"></p><div class="flex justify-center space-x-4 mt-6"><button id="confirm-cancel-btn" class="bg-gray-200 text-gray-700 font-bold py-2 px-6 rounded-lg">Cancelar</button><button id="confirm-ok-btn" class="bg-red-600 text-white font-bold py-2 px-6 rounded-lg">Confirmar</button></div></div></div>
-    <div id="passcode-modal" class="modal fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4"><div class="bg-white p-6 rounded-2xl shadow-xl w-full max-w-sm"><h2 class="text-xl font-bold text-gray-800 mb-4 text-center">Acceso a Caja</h2><p class="text-center text-gray-600 mb-6">Ingresá el código para continuar.</p><form id="passcode-form"><input type="password" id="passcode-input" class="w-full p-3 text-center text-2xl tracking-widest border-gray-300 border rounded-lg" required><p id="passcode-error" class="text-red-500 text-sm text-center mt-2 h-4"></p><div class="flex justify-end space-x-4 mt-6"><button type="button" id="passcode-cancel-btn" class="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg">Cancelar</button><button type="submit" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Entrar</button></div></form></div></div>
+    <div id="message-modal" class="modal fixed inset-0 bg-black/80 hidden items-center justify-center z-50 p-4 backdrop-blur-sm"><div class="bg-gray-800 border border-gray-700 p-6 rounded-2xl shadow-2xl text-center max-w-sm w-full"><p id="modal-message-text" class="text-lg text-gray-100"></p><button id="close-message-modal" class="mt-6 w-full bg-amber-500 text-gray-900 font-bold px-4 py-3 rounded-lg hover:bg-amber-400 transition-colors">Cerrar</button></div></div>
+    <div id="form-modal" class="modal fixed inset-0 bg-black/80 hidden items-center justify-center z-40 overflow-y-auto p-4 backdrop-blur-sm"><div class="bg-gray-800 border border-gray-700 p-6 rounded-2xl shadow-2xl w-full max-w-2xl m-auto"><h2 id="form-modal-title" class="text-2xl font-bold text-amber-500 mb-6 uppercase tracking-wide"></h2><form id="main-form" class="space-y-4"></form></div></div>
+    <div id="confirm-modal" class="modal fixed inset-0 bg-black/80 hidden items-center justify-center z-50 p-4 backdrop-blur-sm"><div class="bg-gray-800 border border-gray-700 p-6 rounded-2xl shadow-2xl text-center max-w-sm w-full"><p id="confirm-modal-text" class="text-lg text-gray-100"></p><div class="flex justify-center space-x-4 mt-6"><button id="confirm-cancel-btn" class="bg-gray-700 text-gray-200 font-bold py-2 px-6 rounded-lg hover:bg-gray-600 transition-colors">Cancelar</button><button id="confirm-ok-btn" class="bg-red-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-500 transition-colors">Confirmar</button></div></div></div>
+    <div id="passcode-modal" class="modal fixed inset-0 bg-black/80 hidden items-center justify-center z-50 p-4 backdrop-blur-sm"><div class="bg-gray-800 border border-gray-700 p-8 rounded-2xl shadow-2xl w-full max-w-sm"><div class="flex justify-center mb-4"><svg class="w-12 h-12 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg></div><h2 class="text-2xl font-bold text-gray-100 mb-2 text-center uppercase tracking-wide">Acceso a Caja</h2><p class="text-center text-gray-400 mb-6">Ingresá tu código de seguridad.</p><form id="passcode-form"><input type="password" id="passcode-input" class="w-full p-4 text-center text-3xl tracking-[0.5em] bg-gray-900 border-gray-700 border-2 rounded-xl text-amber-500 focus:ring-amber-500 focus:border-amber-500 outline-none" required><p id="passcode-error" class="text-red-400 text-sm text-center mt-3 h-4 font-semibold"></p><div class="flex justify-end space-x-4 mt-8"><button type="button" id="passcode-cancel-btn" class="bg-gray-700 text-gray-200 font-bold py-3 px-6 rounded-lg hover:bg-gray-600 transition-colors w-1/2">Cancelar</button><button type="submit" class="bg-amber-500 text-gray-900 font-bold py-3 px-6 rounded-lg hover:bg-amber-400 transition-colors w-1/2">Entrar</button></div></form></div></div>
 
     <!-- Application Logic -->
     <script>
@@ -75,6 +81,9 @@
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzvXjhpyJShf753-L3BJYrxQMVG59oJIGBMtvu4JyNvJr1ji9js9n1SwAWCqBJ8vLJn5A/exec";
         const state = { clientes: [], servicios: [], gastos: [], pagos: [], categoriasGastos: [], asistencias: [], clientFilter: null, isSensitiveHidden: localStorage.getItem('hideSensitive') === 'true', cajaUnlocked: false };
         
+        // CSS Class variable for all forms to keep consistency in Dark Mode
+        const inputClass = "w-full p-3 bg-gray-900 border border-gray-600 rounded-lg mt-1 text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent focus:outline-none placeholder-gray-500 transition-shadow";
+
         const dom = {
             globalLoader: document.getElementById('global-loader'), loaderText: document.getElementById('loader-text'), appContainer: document.getElementById('app-container'),
             contentContainer: document.getElementById('content-container'),
@@ -91,6 +100,7 @@
             init: async () => {
                 try {
                     Chart.register(ChartDataLabels);
+                    Chart.defaults.color = '#9ca3af'; // Global text color for charts
                     Chart.defaults.set('plugins.datalabels', { display: false });
 
                     await app.fetchInitialData();
@@ -107,7 +117,7 @@
             toISODateString: date => date ? new Date(new Date(date).getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0] : '',
             fetchWithTimeout: async (resource, options = {}, timeout = 30000) => { const c = new AbortController(); const id = setTimeout(() => c.abort(), timeout); const r = await fetch(resource, { ...options, signal: c.signal }); clearTimeout(id); return r; },
             postToSheet: async (action, payload) => { const r = await app.fetchWithTimeout(SCRIPT_URL, { method: 'POST', mode: 'cors', cache: 'no-cache', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action, payload }) }); if (!r.ok) throw new Error(`Error de red: ${r.statusText}`); const result = await r.json(); if (result.result !== 'success') throw new Error(result.message || 'Error desconocido al guardar.'); return result; },
-            fetchInitialData: async () => { try { const response = await app.fetchWithTimeout(SCRIPT_URL); if (!response.ok) throw new Error(`Error de Red: ${response.statusText}`); const result = await response.json(); if (result.result === 'success' && result.data) { Object.assign(state, result.data); } else { throw new Error(result.message || "La respuesta del script no tiene el formato esperado."); } } catch (error) { let msg = error.name === 'AbortError' ? "La conexión con Google Sheets tardó demasiado." : `No se pudo cargar: ${error.message}`; dom.loaderText.innerHTML = `<span class="text-red-600 font-bold">${msg}</span><p class="text-sm mt-2 text-gray-600">Verificá tu conexión y que el script de Google esté bien configurado.</p>`; dom.globalLoader.querySelector('.animate-spin').style.display = 'none'; throw error; } },
+            fetchInitialData: async () => { try { const response = await app.fetchWithTimeout(SCRIPT_URL); if (!response.ok) throw new Error(`Error de Red: ${response.statusText}`); const result = await response.json(); if (result.result === 'success' && result.data) { Object.assign(state, result.data); } else { throw new Error(result.message || "La respuesta del script no tiene el formato esperado."); } } catch (error) { let msg = error.name === 'AbortError' ? "La conexión con Google Sheets tardó demasiado." : `No se pudo cargar: ${error.message}`; dom.loaderText.innerHTML = `<span class="text-red-500 font-bold">${msg}</span><p class="text-sm mt-2 text-gray-400">Verificá tu conexión y que el script de Google esté bien configurado.</p>`; dom.globalLoader.querySelector('.animate-spin').style.display = 'none'; throw error; } },
             saveCategoriesToSheet: async () => { try { await app.postToSheet('saveExpenseCategories', state.categoriasGastos); } catch (error) { app.showModal(dom.modals.message, `Error al guardar categorías: ${error.message}`); } },
             renderTabContent(tabName) { const renderFunction = this.render[tabName]; if (renderFunction) dom.contentContainer.innerHTML = renderFunction(); this.addDynamicListeners(tabName); this.updateSensitiveVisibility(); },
             renderAll() { const activeTab = document.querySelector('.tab-btn.active'); if (activeTab) { app.renderTabContent(activeTab.dataset.tab); } },
@@ -129,67 +139,179 @@
                         .filter(p => new Date(p.FechaPago).getMonth() === now.getMonth() && new Date(p.FechaPago).getFullYear() === now.getFullYear())
                         .reduce((sum, p) => sum + parseFloat(p.MontoPagado), 0);
 
-                    let remindersHtml = '<div class="mt-8 bg-white p-6 rounded-2xl shadow-md"><h3 class="text-xl font-bold mb-4">Recordatorios Pendientes</h3>';
+                    let remindersHtml = '<div class="mt-8 bg-gray-800 border border-gray-700 p-6 rounded-2xl shadow-xl"><h3 class="text-xl font-bold mb-6 text-white uppercase tracking-wide border-b border-gray-700 pb-3">Recordatorios Pendientes</h3>';
                     const clientsToRemind = [...expiredClients, ...expiringClients];
                     if (clientsToRemind.length > 0) {
                         remindersHtml += '<ul class="space-y-3">';
                         clientsToRemind.forEach(client => {
                             const isExpired = new Date(client.FechaVencimientoCuota) < now;
-                            remindersHtml += `<li class="flex items-center justify-between p-3 rounded-lg ${isExpired ? 'bg-red-50' : 'bg-yellow-50'}">
+                            remindersHtml += `<li class="flex items-center justify-between p-4 rounded-xl border ${isExpired ? 'bg-red-900/20 border-red-800/50' : 'bg-yellow-900/20 border-yellow-800/50'}">
                                 <div>
-                                    <p class="font-semibold">${client.Nombre} ${client.Apellido}</p>
-                                    <p class="text-sm ${isExpired ? 'text-red-600' : 'text-yellow-600'}">Vence: ${new Date(client.FechaVencimientoCuota).toLocaleDateString('es-ES')}</p>
+                                    <p class="font-bold text-white text-lg">${client.Nombre} ${client.Apellido}</p>
+                                    <p class="text-sm font-medium mt-1 flex items-center gap-1 ${isExpired ? 'text-red-400' : 'text-amber-400'}">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        Vence: ${new Date(client.FechaVencimientoCuota).toLocaleDateString('es-ES')}
+                                    </p>
                                 </div>
-                                <button data-action="sendWhatsAppReminder" data-id="${client.ID_Cliente}" class="bg-green-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600 flex items-center gap-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg>
+                                <button data-action="sendWhatsAppReminder" data-id="${client.ID_Cliente}" class="bg-emerald-600 text-white font-bold py-2 px-5 rounded-lg hover:bg-emerald-500 transition-colors flex items-center gap-2 shadow-lg shadow-emerald-900/50">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg>
                                     <span>Recordar</span>
                                 </button>
                             </li>`;
                         });
                         remindersHtml += '</ul>';
                     } else {
-                        remindersHtml += '<p class="text-center text-gray-500 py-6">¡Todo en orden! No hay recordatorios pendientes.</p>';
+                        remindersHtml += '<div class="text-center py-10"><div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-700/50 mb-4"><svg class="w-8 h-8 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></div><p class="text-gray-400 font-medium">¡Todo al día! No hay recordatorios pendientes.</p></div>';
                     }
                     remindersHtml += '</div>';
 
                     return `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                <div data-action="filterClientes" data-filter="activos" class="bg-white p-6 rounded-2xl shadow-md kpi-card cursor-pointer"><h3 class="text-gray-500 text-sm font-medium">Clientes Activos</h3><p class="text-3xl font-bold mt-2">${activeClients}</p></div>
-                                <div data-action="filterClientes" data-filter="expiring" class="bg-white p-6 rounded-2xl shadow-md kpi-card cursor-pointer"><h3 class="text-yellow-600 text-sm font-medium">Cuotas por Vencer (7d)</h3><p class="text-3xl font-bold mt-2">${expiringClients.length}</p></div>
-                                <div data-action="filterClientes" data-filter="expired" class="bg-white p-6 rounded-2xl shadow-md kpi-card cursor-pointer"><h3 class="text-red-600 text-sm font-medium">Cuotas Vencidas</h3><p class="text-3xl font-bold mt-2">${expiredClients.length}</p></div>
-                                <div class="bg-white p-6 rounded-2xl shadow-md"><h3 class="text-green-600 text-sm font-medium">Ingresos del Mes</h3><p class="text-3xl font-bold mt-2 sensitive-data">${app.formatCurrency(monthlyRevenue)}</p></div>
+                                <div data-action="filterClientes" data-filter="activos" class="bg-gray-800 border border-gray-700 p-6 rounded-2xl shadow-xl kpi-card cursor-pointer">
+                                    <div class="flex justify-between items-start"><h3 class="text-gray-400 text-xs font-bold uppercase tracking-wider">Clientes Activos</h3><div class="p-2 bg-sky-900/30 rounded-lg"><svg class="w-5 h-5 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg></div></div>
+                                    <p class="text-4xl font-extrabold mt-4 text-white">${activeClients}</p>
+                                </div>
+                                <div data-action="filterClientes" data-filter="expiring" class="bg-gray-800 border border-gray-700 p-6 rounded-2xl shadow-xl kpi-card cursor-pointer">
+                                    <div class="flex justify-between items-start"><h3 class="text-amber-500 text-xs font-bold uppercase tracking-wider">Por Vencer (7d)</h3><div class="p-2 bg-amber-900/30 rounded-lg"><svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div></div>
+                                    <p class="text-4xl font-extrabold mt-4 text-white">${expiringClients.length}</p>
+                                </div>
+                                <div data-action="filterClientes" data-filter="expired" class="bg-gray-800 border border-gray-700 p-6 rounded-2xl shadow-xl kpi-card cursor-pointer">
+                                    <div class="flex justify-between items-start"><h3 class="text-red-500 text-xs font-bold uppercase tracking-wider">Cuotas Vencidas</h3><div class="p-2 bg-red-900/30 rounded-lg"><svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg></div></div>
+                                    <p class="text-4xl font-extrabold mt-4 text-white">${expiredClients.length}</p>
+                                </div>
+                                <div class="bg-gray-800 border border-gray-700 p-6 rounded-2xl shadow-xl">
+                                    <div class="flex justify-between items-start"><h3 class="text-emerald-500 text-xs font-bold uppercase tracking-wider">Ingresos Mes</h3><div class="p-2 bg-emerald-900/30 rounded-lg"><svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div></div>
+                                    <p class="text-3xl font-extrabold mt-4 text-white sensitive-data">${app.formatCurrency(monthlyRevenue)}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-8 bg-gray-800 border border-gray-700 p-6 rounded-2xl shadow-xl">
+                                <h3 class="text-xl font-bold mb-6 text-white uppercase tracking-wide border-b border-gray-700 pb-3">Accesos Rápidos</h3>
+                                <div class="flex flex-wrap gap-4">
+                                    <button data-action="openClientModal" class="bg-amber-600 text-gray-900 font-bold py-3 px-6 rounded-xl hover:bg-amber-500 transition-colors shadow-lg shadow-amber-900/20 flex items-center gap-2">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg> Nuevo Cliente
+                                    </button>
+                                    <button data-action="openServiceModal" class="bg-sky-600 text-white font-bold py-3 px-6 rounded-xl hover:bg-sky-500 transition-colors shadow-lg shadow-sky-900/20 flex items-center gap-2">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg> Nuevo Servicio
+                                    </button>
+                                    <button data-action="openExpenseModal" class="bg-red-600 text-white font-bold py-3 px-6 rounded-xl hover:bg-red-500 transition-colors shadow-lg shadow-red-900/20 flex items-center gap-2">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg> Nuevo Gasto
+                                    </button>
+                                </div>
                             </div>
                             ${remindersHtml}`;
                 },
-                clientes() { let c = `<div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4"><h2 class="text-2xl font-bold">Clientes</h2><div class="relative w-full sm:w-64"><input type="text" id="search-cliente" placeholder="Buscar cliente..." class="w-full p-2 border border-gray-300 rounded-lg pr-10"><svg class="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg></div><button data-action="openClientModal" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 w-full sm:w-auto shrink-0">Agregar Cliente</button></div>`; if (state.clientFilter) c += `<div class="mb-4 p-4 bg-blue-100 border-l-4 border-blue-500 rounded-r-lg flex justify-between items-center"><h3 class="font-bold">Filtro Activo: ${state.clientFilter.name}</h3><button data-action="clearClientFilter" class="text-sm text-blue-600 hover:underline font-semibold">Limpiar filtro</button></div>`; c += '<div id="client-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">'; let filteredClients = state.clientFilter ? state.clientes.filter(state.clientFilter.fn) : state.clientes; if (filteredClients.length === 0) c += `<p class="col-span-full text-center text-gray-500 py-10">${state.clientFilter ? 'No hay clientes que coincidan con el filtro.' : 'No hay clientes cargados.'}</p>`; filteredClients.sort((a, b) => (a.Apellido || '').localeCompare(b.Apellido || '')).forEach(cl => { const sC = cl.Estado === 'Activo' ? 'bg-green-100 text-green-800' : (cl.Estado === 'Pausa' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'); let dD = cl.FechaVencimientoCuota ? new Date(cl.FechaVencimientoCuota).toLocaleDateString('es-ES') : 'N/A'; const hasPhone = String(cl.Celular || '').trim() !== ''; c += `<div class="bg-white p-5 rounded-2xl shadow-md space-y-3 flex flex-col client-card" data-nombre="${cl.Nombre} ${cl.Apellido}"><div class="flex justify-between items-start"><h3 class="text-xl font-bold">${cl.Nombre || ''} ${cl.Apellido || ''}</h3><span class="text-xs font-semibold px-2 py-1 rounded-full ${sC}">${cl.Estado || 'S/E'}</span></div><p class="text-sm text-gray-600 flex-grow">Vencimiento: <span class="font-semibold">${dD}</span></p><div class="flex justify-end space-x-2 pt-2 border-t mt-auto"><button data-action="sendWhatsAppReminder" data-id="${cl.ID_Cliente}" class="text-sm bg-green-500 text-white font-semibold py-1 px-3 rounded-md hover:bg-green-600 flex items-center gap-1 ${hasPhone ? '' : 'opacity-50 cursor-not-allowed'}" ${hasPhone ? '' : 'disabled'}><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg>Wpp</button><button data-action="markAttendance" data-id="${cl.ID_Cliente}" class="text-sm bg-gray-500 text-white font-semibold py-1 px-3 rounded-md hover:bg-gray-600">Asistencia</button><button data-action="openPaymentModal" data-id="${cl.ID_Cliente}" class="text-sm bg-green-500 text-white font-semibold py-1 px-3 rounded-md hover:bg-green-600">Pago</button><button data-action="openClientModal" data-id="${cl.ID_Cliente}" class="text-sm bg-gray-200 text-gray-700 font-semibold py-1 px-3 rounded-md hover:bg-gray-300">Editar</button></div></div>`; }); c += '</div>'; return c; },
-                servicios() { let c = `<div class="text-right mb-4"><button data-action="openServiceModal" class="bg-purple-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-purple-700">Agregar Servicio</button></div>`; c += `<div class="bg-white p-6 rounded-2xl shadow-md"><div class="overflow-x-auto"><table class="w-full text-left"><thead><tr class="border-b"><th class="p-3">Nombre</th><th class="p-3">Precio</th><th class="p-3">Tipo</th><th class="p-3 text-right">Acciones</th></tr></thead><tbody>`; if (state.servicios.length === 0) c += '<tr><td colspan="4" class="text-center text-gray-500 p-6">No hay servicios cargados.</td></tr>'; state.servicios.forEach(s => { c += `<tr class="border-b"><td class="p-3 font-semibold">${s.NombreServicio}</td><td class="p-3 sensitive-data">${app.formatCurrency(s.Precio)}</td><td class="p-3">${s.Tipo}</td><td class="p-3 text-right"><button data-action="openServiceModal" data-id="${s.ID_Servicio}" class="text-blue-600 hover:underline">Editar</button><button data-action="deleteService" data-id="${s.ID_Servicio}" class="text-red-600 hover:underline ml-4">Borrar</button></td></tr>`; }); c += `</tbody></table></div></div>`; return c; },
-                config() { let catHtml = state.categoriasGastos.map(cat => `<div class="flex items-center justify-between bg-gray-100 p-2 rounded-md"><span>${cat}</span><button data-action="deleteExpenseCategory" data-cat="${cat}" class="text-red-500 hover:text-red-700 font-bold text-xl">&times;</button></div>`).join(''); return `<div class="grid grid-cols-1 md:grid-cols-2 gap-8"><div class="bg-white p-6 rounded-2xl shadow-md"><h3 class="text-xl font-bold mb-4">Gestionar Categorías de Gastos</h3><div id="expense-categories-list" class="space-y-2 mb-4">${catHtml}</div><form id="add-expense-category-form" class="flex gap-2"><input type="text" placeholder="Nueva categoría de gasto" class="flex-grow p-2 border border-gray-300 rounded-lg"><button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">+</button></form></div></div>`; },
-                estadisticas() {
-                    return `<div id="content-estadisticas" class="bg-white p-6 rounded-2xl shadow-md">
-                        <h2 class="text-2xl font-bold text-gray-800 mb-6">Análisis de Finanzas</h2>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 items-end">
-                            <div><label for="stats-type" class="block text-sm font-medium text-gray-700">Tipo de Dato</label><select id="stats-type" class="mt-1 block w-full p-2 text-base border-gray-300 rounded-md"><option value="ingresos">Ingresos</option><option value="gastos">Gastos</option></select></div>
-                            <div><label for="stats-date-from" class="block text-sm font-medium text-gray-700">Desde</label><input type="date" id="stats-date-from" class="mt-1 block w-full p-2 text-base border-gray-300 rounded-md"></div>
-                            <div><label for="stats-date-to" class="block text-sm font-medium text-gray-700">Hasta</label><input type="date" id="stats-date-to" class="mt-1 block w-full p-2 text-base border-gray-300 rounded-md"></div>
-                        </div>
-                        <div id="stats-filters-extra" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 items-end border-t pt-4 mt-4"></div>
+                clientes() { 
+                    let c = `<div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+                                <h2 class="text-3xl font-extrabold text-white tracking-tight">Clientes</h2>
+                                <div class="relative w-full sm:w-72">
+                                    <input type="text" id="search-cliente" placeholder="Buscar cliente..." class="w-full p-3 bg-gray-800 border border-gray-700 rounded-xl pr-10 text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none transition-shadow placeholder-gray-500">
+                                    <svg class="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg>
+                                </div>
+                                <button data-action="openClientModal" class="bg-amber-600 text-gray-900 font-bold py-3 px-5 rounded-xl hover:bg-amber-500 transition-colors w-full sm:w-auto shrink-0 shadow-lg shadow-amber-900/20">Agregar Cliente</button>
+                            </div>`; 
+                    if (state.clientFilter) c += `<div class="mb-6 p-4 bg-amber-900/30 border-l-4 border-amber-500 rounded-r-xl flex justify-between items-center shadow-md"><h3 class="font-bold text-amber-400">Filtro Activo: <span class="text-white">${state.clientFilter.name}</span></h3><button data-action="clearClientFilter" class="text-sm text-amber-500 hover:text-amber-400 hover:underline font-semibold transition-colors">Limpiar filtro</button></div>`; 
+                    c += '<div id="client-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">'; 
+                    let filteredClients = state.clientFilter ? state.clientes.filter(state.clientFilter.fn) : state.clientes; 
+                    if (filteredClients.length === 0) c += `<div class="col-span-full bg-gray-800 border border-gray-700 rounded-2xl p-10 text-center"><p class="text-gray-400 text-lg">${state.clientFilter ? 'No hay clientes que coincidan con el filtro.' : 'No hay clientes cargados en el sistema.'}</p></div>`; 
+                    
+                    filteredClients.sort((a, b) => (a.Apellido || '').localeCompare(b.Apellido || '')).forEach(cl => { 
+                        const sC = cl.Estado === 'Activo' ? 'bg-green-900/40 text-green-400 border border-green-800' : (cl.Estado === 'Pausa' ? 'bg-yellow-900/40 text-yellow-400 border border-yellow-800' : 'bg-red-900/40 text-red-400 border border-red-800'); 
+                        let dD = cl.FechaVencimientoCuota ? new Date(cl.FechaVencimientoCuota).toLocaleDateString('es-ES') : 'N/A'; 
+                        const hasPhone = String(cl.Celular || '').trim() !== ''; 
                         
-                        <div class="text-center my-8">
-                            <h4 class="text-lg font-medium text-gray-500">Total del Período</h4>
-                            <p id="stats-total" class="text-4xl font-bold text-gray-900 mt-1 sensitive-data">-</p>
+                        c += `<div class="bg-gray-800 border border-gray-700 p-6 rounded-2xl shadow-xl space-y-4 flex flex-col client-card transition-all hover:border-gray-600" data-nombre="${cl.Nombre} ${cl.Apellido}">
+                                <div class="flex justify-between items-start">
+                                    <h3 class="text-xl font-extrabold text-white leading-tight">${cl.Nombre || ''} ${cl.Apellido || ''}</h3>
+                                    <span class="text-xs font-bold px-3 py-1 rounded-full ${sC}">${cl.Estado || 'S/E'}</span>
+                                </div>
+                                <div class="bg-gray-900/50 p-3 rounded-lg border border-gray-700/50">
+                                    <p class="text-sm text-gray-400 flex justify-between items-center"><span>Vencimiento:</span> <span class="font-bold text-gray-200 text-base">${dD}</span></p>
+                                </div>
+                                <div class="flex justify-end space-x-2 pt-4 border-t border-gray-700 mt-auto">
+                                    <button data-action="sendWhatsAppReminder" data-id="${cl.ID_Cliente}" class="text-sm bg-emerald-600 text-white font-bold py-2 px-3 rounded-lg hover:bg-emerald-500 transition-colors flex items-center gap-1 ${hasPhone ? '' : 'opacity-30 cursor-not-allowed'}" ${hasPhone ? '' : 'disabled'} title="Enviar WhatsApp">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg>
+                                    </button>
+                                    <button data-action="markAttendance" data-id="${cl.ID_Cliente}" class="text-sm bg-sky-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-sky-500 transition-colors">Asistencia</button>
+                                    <button data-action="openPaymentModal" data-id="${cl.ID_Cliente}" class="text-sm bg-amber-600 text-gray-900 font-bold py-2 px-4 rounded-lg hover:bg-amber-500 transition-colors">Pago</button>
+                                    <button data-action="openClientModal" data-id="${cl.ID_Cliente}" class="text-sm bg-gray-700 text-gray-200 font-bold py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors">Editar</button>
+                                </div>
+                            </div>`; 
+                    }); 
+                    c += '</div>'; return c; 
+                },
+                servicios() { 
+                    let c = `<div class="flex justify-between items-center mb-6"><h2 class="text-3xl font-extrabold text-white tracking-tight">Servicios</h2><button data-action="openServiceModal" class="bg-amber-600 text-gray-900 font-bold py-3 px-5 rounded-xl hover:bg-amber-500 transition-colors shadow-lg shadow-amber-900/20">Agregar Servicio</button></div>`; 
+                    c += `<div class="bg-gray-800 border border-gray-700 p-2 sm:p-6 rounded-2xl shadow-xl"><div class="overflow-x-auto"><table class="w-full text-left border-collapse"><thead><tr class="border-b border-gray-700"><th class="p-4 text-gray-400 uppercase text-xs font-bold tracking-wider">Nombre</th><th class="p-4 text-gray-400 uppercase text-xs font-bold tracking-wider">Precio</th><th class="p-4 text-gray-400 uppercase text-xs font-bold tracking-wider">Tipo</th><th class="p-4 text-right text-gray-400 uppercase text-xs font-bold tracking-wider">Acciones</th></tr></thead><tbody>`; 
+                    if (state.servicios.length === 0) c += '<tr><td colspan="4" class="text-center text-gray-500 p-8 text-lg">No hay servicios cargados.</td></tr>'; 
+                    state.servicios.forEach(s => { c += `<tr class="border-b border-gray-700/50 hover:bg-gray-700/30 transition-colors"><td class="p-4 font-bold text-gray-200">${s.NombreServicio}</td><td class="p-4 text-amber-400 font-mono font-bold sensitive-data">${app.formatCurrency(s.Precio)}</td><td class="p-4"><span class="px-2 py-1 bg-gray-900 rounded-md text-sm text-gray-300 border border-gray-600">${s.Tipo}</span></td><td class="p-4 text-right"><button data-action="openServiceModal" data-id="${s.ID_Servicio}" class="text-sky-500 hover:text-sky-400 font-semibold transition-colors">Editar</button><button data-action="deleteService" data-id="${s.ID_Servicio}" class="text-red-500 hover:text-red-400 font-semibold ml-5 transition-colors">Borrar</button></td></tr>`; }); 
+                    c += `</tbody></table></div></div>`; return c; 
+                },
+                config() { 
+                    let catHtml = state.categoriasGastos.map(cat => `<div class="flex items-center justify-between bg-gray-900 border border-gray-700 p-3 rounded-xl"><span class="text-gray-200 font-medium">${cat}</span><button data-action="deleteExpenseCategory" data-cat="${cat}" class="text-red-500 hover:text-red-400 font-bold text-xl px-2 transition-colors">&times;</button></div>`).join(''); 
+                    return `<div class="grid grid-cols-1 md:grid-cols-2 gap-8"><div class="bg-gray-800 border border-gray-700 p-6 rounded-2xl shadow-xl"><h3 class="text-xl font-bold mb-6 text-white uppercase tracking-wide border-b border-gray-700 pb-3">Categorías de Gastos</h3><div id="expense-categories-list" class="space-y-3 mb-6">${catHtml}</div><form id="add-expense-category-form" class="flex gap-3"><input type="text" placeholder="Nueva categoría..." class="${inputClass.replace('mt-1', '')}"><button type="submit" class="bg-amber-600 text-gray-900 px-5 py-3 rounded-lg hover:bg-amber-500 font-bold transition-colors shadow-lg">+</button></form></div></div>`; 
+                },
+                estadisticas() {
+                    return `<div id="content-estadisticas" class="bg-gray-800 border border-gray-700 p-6 rounded-2xl shadow-xl">
+                        <div class="flex flex-col sm:flex-row justify-between items-center mb-8 border-b border-gray-700 pb-4">
+                            <h2 class="text-3xl font-extrabold text-white tracking-tight">Inteligencia Financiera</h2>
+                            <div class="mt-4 sm:mt-0 flex space-x-3">
+                                <button data-action="clearStatsFilters" class="bg-gray-700 text-gray-200 font-bold py-2 px-4 rounded-xl hover:bg-gray-600 transition-colors">Limpiar Filtros</button>
+                                <button data-action="exportStats" class="bg-amber-600 text-gray-900 font-bold py-2 px-4 rounded-xl hover:bg-amber-500 transition-colors shadow-lg shadow-amber-900/20">Exportar CSV</button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 items-end bg-gray-900/50 p-5 rounded-xl border border-gray-700/50">
+                            <div><label for="stats-type" class="block text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">Análisis de</label><select id="stats-type" class="${inputClass}"><option value="ingresos">Ingresos</option><option value="gastos">Gastos</option></select></div>
+                            <div><label for="stats-date-from" class="block text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">Desde</label><input type="date" id="stats-date-from" class="${inputClass}"></div>
+                            <div><label for="stats-date-to" class="block text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">Hasta</label><input type="date" id="stats-date-to" class="${inputClass}"></div>
+                        </div>
+                        <div id="stats-filters-extra" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 items-end bg-gray-900/50 p-5 rounded-xl border border-gray-700/50"></div>
+                        
+                        <div class="text-center my-10 bg-gray-900 py-6 rounded-2xl border border-gray-700 shadow-inner">
+                            <h4 class="text-sm font-bold text-amber-500 uppercase tracking-[0.2em] mb-2">Total del Período</h4>
+                            <p id="stats-total" class="text-5xl font-black text-white sensitive-data drop-shadow-md">-</p>
                         </div>
                         
                         <div class="w-full h-96 mx-auto"><canvas id="stats-chart"></canvas></div>
-                        <div class="text-right mt-4 flex justify-end space-x-4">
-                            <button data-action="clearStatsFilters" class="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-300">Limpiar Filtros</button>
-                            <button data-action="exportStats" class="bg-gray-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-700">Exportar a CSV</button>
-                        </div>
                     </div>`;
                 },
-                asistencias() { const today = app.toISODateString(new Date()); return `<div class="bg-white p-6 rounded-2xl shadow-md"><h2 class="text-2xl font-bold mb-4">Registro de Asistencias</h2><div class="mb-4"><label for="asistencia-date" class="block text-sm font-medium text-gray-700">Seleccionar Fecha:</label><input type="date" id="asistencia-date" value="${today}" class="mt-1 block w-full sm:w-auto p-2 border border-gray-300 rounded-lg"></div><div id="asistencias-list" class="mt-6"></div></div>`; },
-                caja() { return `<div class="bg-white p-6 rounded-2xl shadow-md"><div class="border-b border-gray-200 mb-4"><nav class="-mb-px flex space-x-4" aria-label="Caja Tabs"><button data-cajatab="balance" class="caja-tab-btn active font-medium text-sm py-2 px-3 border-b-2">Balance</button><button data-cajatab="ingresos" class="caja-tab-btn text-gray-500 hover:text-gray-700 font-medium text-sm py-2 px-3 border-b-2 border-transparent">Ingresos</button><button data-cajatab="gastos" class="caja-tab-btn text-gray-500 hover:text-gray-700 font-medium text-sm py-2 px-3 border-b-2 border-transparent">Gastos</button></nav></div><div id="caja-content-container"></div></div>`; },
+                asistencias() { 
+                    const today = app.toISODateString(new Date()); 
+                    return `<div class="bg-gray-800 border border-gray-700 p-6 rounded-2xl shadow-xl">
+                                <h2 class="text-3xl font-extrabold text-white tracking-tight mb-6 border-b border-gray-700 pb-4">Control de Asistencias</h2>
+                                <div class="mb-8 bg-gray-900/50 p-5 rounded-xl border border-gray-700/50 inline-block w-full sm:w-auto">
+                                    <label for="asistencia-date" class="block text-sm font-bold text-amber-500 uppercase tracking-wider mb-2">Seleccionar Fecha:</label>
+                                    <input type="date" id="asistencia-date" value="${today}" class="${inputClass}">
+                                </div>
+                                <div id="asistencias-list" class="mt-2"></div>
+                            </div>`; 
+                },
+                caja() { 
+                    return `<div class="bg-gray-800 border border-gray-700 p-6 rounded-2xl shadow-xl">
+                                <div class="border-b border-gray-700 mb-8">
+                                    <nav class="-mb-px flex space-x-6" aria-label="Caja Tabs">
+                                        <button data-cajatab="balance" class="caja-tab-btn active font-bold text-sm py-3 px-2 border-b-2 uppercase tracking-wide transition-colors">Balance General</button>
+                                        <button data-cajatab="ingresos" class="caja-tab-btn text-gray-400 hover:text-gray-200 font-bold text-sm py-3 px-2 border-b-2 border-transparent uppercase tracking-wide transition-colors">Ingresos</button>
+                                        <button data-cajatab="gastos" class="caja-tab-btn text-gray-400 hover:text-gray-200 font-bold text-sm py-3 px-2 border-b-2 border-transparent uppercase tracking-wide transition-colors">Gastos</button>
+                                    </nav>
+                                </div>
+                                <div id="caja-content-container" class="min-h-[300px]"></div>
+                            </div>`; 
+                },
             },
-            createFormFields: (fields) => fields.map(f => `<div><label class="block text-sm font-medium text-gray-700">${f.label}</label>${f.html}</div>`).join(''),
-            openFormModal: (config) => { state.currentEntity = config.entity; dom.formModalTitle.textContent = config.title; const fieldsHTML = app.createFormFields(config.fields); const buttonsHTML = `<div class="flex justify-end space-x-4 pt-4"><button type="button" class="form-cancel-btn bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg">Cancelar</button><button type="submit" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">${config.submitText}</button></div>`; dom.mainForm.innerHTML = fieldsHTML + buttonsHTML; dom.mainForm.querySelector('.form-cancel-btn').addEventListener('click', () => app.hideModal(dom.modals.form)); dom.mainForm.onsubmit = config.handler; app.showModal(dom.modals.form); },
+            createFormFields: (fields) => fields.map(f => {
+                const buttonHtml = f.action ? `<button type="button" data-action="${f.action}" data-event-target="true" class="ml-3 text-xs bg-amber-900/30 text-amber-500 hover:text-amber-400 hover:bg-amber-900/50 border border-amber-700/50 px-3 py-1 rounded-md font-bold uppercase tracking-wider transition-all shadow-sm">${f.actionLabel}</button>` : '';
+                return `<div class="mb-5"><div class="flex justify-between items-center mb-2"><label class="block text-sm font-bold text-gray-300 uppercase tracking-wide">${f.label}</label>${buttonHtml}</div>${f.html}</div>`;
+            }).join(''),
+            openFormModal: (config) => { 
+                state.currentEntity = config.entity; 
+                dom.formModalTitle.textContent = config.title; 
+                const fieldsHTML = app.createFormFields(config.fields); 
+                const buttonsHTML = `<div class="flex justify-end space-x-4 pt-6 border-t border-gray-700 mt-6"><button type="button" class="form-cancel-btn bg-gray-700 text-gray-200 font-bold py-3 px-6 rounded-xl hover:bg-gray-600 transition-colors">Cancelar</button><button type="submit" class="bg-amber-600 text-gray-900 font-bold py-3 px-8 rounded-xl hover:bg-amber-500 transition-colors shadow-lg shadow-amber-900/20">${config.submitText}</button></div>`; 
+                dom.mainForm.innerHTML = fieldsHTML + buttonsHTML; 
+                dom.mainForm.querySelector('.form-cancel-btn').addEventListener('click', () => app.hideModal(dom.modals.form)); 
+                dom.mainForm.onsubmit = config.handler; 
+                app.showModal(dom.modals.form); 
+            },
             handleFormSubmit: async (e, action, basePayload) => {
                 e.preventDefault();
                 const btn = e.target.querySelector('button[type=submit]');
@@ -197,7 +319,6 @@
                 const payload = { ...basePayload };
                 for (let [key, value] of formData.entries()) { payload[key] = value; }
                 
-                // CORRECCIÓN: Ajustar la fecha de vencimiento para evitar problemas de zona horaria
                 if (action === 'savePayment' && payload.ProximoVencimiento) {
                     const dateOnly = payload.ProximoVencimiento.split('T')[0];
                     payload.ProximoVencimiento = dateOnly + "T12:00:00.000Z";
@@ -215,11 +336,35 @@
                     btn.classList.remove('btn-loading');
                 }
             },
-            openClientModal: (id) => { const entity = id ? state.clientes.find(c => c.ID_Cliente === id) || {} : {}; app.openFormModal({ title: id ? 'Editar Cliente' : 'Nuevo Cliente', entity, submitText: 'Guardar', fields: [{ label: 'Nombre', html: `<input type="text" name="Nombre" class="w-full p-2 border rounded mt-1" value="${entity.Nombre || ''}" required>` }, { label: 'Apellido', html: `<input type="text" name="Apellido" class="w-full p-2 border rounded mt-1" value="${entity.Apellido || ''}">` }, { label: 'Celular', html: `<input type="tel" name="Celular" class="w-full p-2 border rounded mt-1" value="${entity.Celular || ''}">` }, { label: 'Email', html: `<input type="email" name="Email" class="w-full p-2 border rounded mt-1" value="${entity.Email || ''}">` }, { label: 'Fecha Nacimiento', html: `<input type="date" name="FechaNacimiento" class="w-full p-2 border rounded mt-1" value="${app.toISODateString(entity.FechaNacimiento)}">` }, { label: 'Fecha Inicio', html: `<input type="date" name="FechaInicio" class="w-full p-2 border rounded mt-1" value="${app.toISODateString(entity.FechaInicio || new Date())}">` }, { label: 'Estado', html: `<select name="Estado" class="w-full p-2 border rounded mt-1"><option value="Activo" ${entity.Estado === 'Activo' ? 'selected' : ''}>Activo</option><option value="Inactivo" ${entity.Estado === 'Inactivo' ? 'selected' : ''}>Inactivo</option><option value="Pausa" ${entity.Estado === 'Pausa' ? 'selected' : ''}>Pausa</option></select>` }, { label: 'Objetivos', html: `<textarea name="Objetivos" class="w-full p-2 border rounded mt-1" rows="3">${entity.Objetivos || ''}</textarea>` }, { label: 'Notas', html: `<textarea name="Notas" class="w-full p-2 border rounded mt-1" rows="3">${entity.Notas || ''}</textarea>` },], handler: (e) => app.handleFormSubmit(e, 'saveClient', { ID_Cliente: entity.ID_Cliente }) }); },
-            openServiceModal: (id) => { const entity = id ? state.servicios.find(s => s.ID_Servicio === id) || {} : {}; app.openFormModal({ title: id ? 'Editar Servicio' : 'Nuevo Servicio', entity, submitText: 'Guardar', fields: [{ label: 'Nombre del Servicio', html: `<input type="text" name="NombreServicio" class="w-full p-2 border rounded mt-1" value="${entity.NombreServicio || ''}" required>` }, { label: 'Precio', html: `<input type="number" step="0.01" name="Precio" class="w-full p-2 border rounded mt-1" value="${entity.Precio || ''}" required>` }, { label: 'Tipo', html: `<select name="Tipo" class="w-full p-2 border rounded mt-1"><option value="Mensual" ${entity.Tipo === 'Mensual' ? 'selected' : ''}>Mensual</option><option value="Trimestral" ${entity.Tipo === 'Trimestral' ? 'selected' : ''}>Trimestral</option><option value="Pack" ${entity.Tipo === 'Pack' ? 'selected' : ''}>Pack de Clases</option><option value="Clase Unica" ${entity.Tipo === 'Clase Unica' ? 'selected' : ''}>Clase Única</option></select>` }, { label: 'Descripción', html: `<textarea name="Descripcion" class="w-full p-2 border rounded mt-1">${entity.Descripcion || ''}</textarea>` }], handler: (e) => app.handleFormSubmit(e, 'saveService', { ID_Servicio: entity.ID_Servicio }) }); },
-            openExpenseModal: (id) => { const entity = id ? state.gastos.find(g => g.ID_Gasto === id) || {} : {}; let categoryOptions = state.categoriasGastos.map(cat => `<option value="${cat}" ${entity.Categoria === cat ? 'selected' : ''}>${cat}</option>`).join(''); app.openFormModal({ title: id ? 'Editar Gasto' : 'Nuevo Gasto', entity, submitText: 'Guardar', fields: [{ label: 'Fecha', html: `<input type="date" name="Fecha" class="w-full p-2 border rounded mt-1" value="${app.toISODateString(entity.Fecha || new Date())}" required>` }, { label: 'Descripción', html: `<input type="text" name="Descripcion" class="w-full p-2 border rounded mt-1" value="${entity.Descripcion || ''}" required>` }, { label: 'Monto', html: `<input type="number" step="0.01" name="Monto" class="w-full p-2 border rounded mt-1" value="${entity.Monto || ''}" required>` }, { label: 'Categoría', html: `<select name="Categoria" class="w-full p-2 border rounded mt-1">${categoryOptions}</select>` }, { label: 'Proveedor', html: `<input type="text" name="Proveedor" class="w-full p-2 border rounded mt-1" value="${entity.Proveedor || ''}">` }], handler: (e) => app.handleFormSubmit(e, 'saveExpense', { ID_Gasto: entity.ID_Gasto }) }); },
-            openPaymentModal: (clientId, paymentId) => { let entity = paymentId ? state.pagos.find(p => p.ID_Pago === paymentId) || {} : {}; const client = state.clientes.find(c => c.ID_Cliente === clientId); if (!client) { app.showModal(dom.modals.message, "Error: No se encontró el cliente para registrar el pago."); return; } const title = paymentId ? "Editar Pago" : `Registrar Pago a ${client.Nombre}`; const serviceId = entity.ID_Servicio || client.ID_ServicioActual; let serviceOptions = state.servicios.map(s => `<option value="${s.ID_Servicio}" ${serviceId === s.ID_Servicio ? 'selected' : ''}>${s.NombreServicio} - ${app.formatCurrency(s.Precio)}</option>`).join(''); app.openFormModal({ title, entity, submitText: 'Guardar Pago', fields: [{ label: 'Servicio Contratado', html: `<select name="ID_Servicio" class="w-full p-2 border rounded mt-1" required>${serviceOptions}</select>` }, { label: 'Monto Pagado', html: `<input type="number" step="0.01" name="MontoPagado" class="w-full p-2 border rounded mt-1" value="${entity.MontoPagado || ''}" required>` }, { label: 'Fecha de Pago', html: `<input type="date" name="FechaPago" class="w-full p-2 border rounded mt-1" value="${app.toISODateString(entity.FechaPago || new Date())}" required>` }, { label: 'Método de Pago', html: `<input type="text" name="MetodoPago" class="w-full p-2 border rounded mt-1" value="${entity.MetodoPago || 'Efectivo'}">` }, { label: 'Próximo Vencimiento del Cliente', html: `<input type="date" name="ProximoVencimiento" class="w-full p-2 border rounded mt-1" value="${app.toISODateString(client.FechaVencimientoCuota || new Date())}" required>` }, { label: 'Notas', html: `<textarea name="Notas" class="w-full p-2 border rounded mt-1">${entity.Notas || ''}</textarea>` }], handler: (e) => app.handleFormSubmit(e, 'savePayment', { ID_Cliente: clientId, ID_Pago: entity.ID_Pago }) }); },
-            confirmDelete: (sheetName, idColumn, id) => { dom.confirmModalText.textContent = `¿Estás seguro de que querés eliminar este elemento? Esta acción no se puede deshacer.`; app.showModal(dom.modals.confirm); dom.confirmOkBtn.onclick = async () => { try { await app.postToSheet('deleteRow', { sheetName, idColumn, id }); await app.fetchInitialData(); app.renderAll(); } catch (error) { app.showModal(dom.modals.message, `Error al eliminar: ${error.message}`); } finally { app.hideModal(dom.modals.confirm); } }; },
+            openClientModal: (id) => {
+                const entity = id ? state.clientes.find(c => c.ID_Cliente === id) || {} : {};
+                app.openFormModal({
+                    title: id ? 'Editar Atleta' : 'Nuevo Atleta',
+                    entity,
+                    submitText: 'Guardar Ficha',
+                    fields: [
+                        { label: 'Nombre', html: `<input type="text" name="Nombre" class="${inputClass}" value="${entity.Nombre || ''}" required>` },
+                        { label: 'Apellido', html: `<input type="text" name="Apellido" class="${inputClass}" value="${entity.Apellido || ''}">` },
+                        { label: 'Celular', html: `<input type="tel" name="Celular" class="${inputClass}" value="${entity.Celular || ''}">` },
+                        { label: 'Email', html: `<input type="email" name="Email" class="${inputClass}" value="${entity.Email || ''}">` },
+                        { label: 'Fecha Nacimiento', html: `<input type="date" name="FechaNacimiento" class="${inputClass}" value="${app.toISODateString(entity.FechaNacimiento)}">` },
+                        { label: 'Fecha Inicio', html: `<input type="date" name="FechaInicio" class="${inputClass}" value="${app.toISODateString(entity.FechaInicio || new Date())}">` },
+                        { label: 'Estado', html: `<select name="Estado" class="${inputClass}"><option value="Activo" ${entity.Estado === 'Activo' ? 'selected' : ''}>Activo</option><option value="Inactivo" ${entity.Estado === 'Inactivo' ? 'selected' : ''}>Inactivo</option><option value="Pausa" ${entity.Estado === 'Pausa' ? 'selected' : ''}>Pausa</option></select>` },
+                        { 
+                            label: 'Objetivos',
+                            action: 'generateAIObjectives',
+                            actionLabel: '✨ Sugerir con IA',
+                            html: `<textarea id="form-objetivos" name="Objetivos" class="${inputClass}" rows="3" placeholder="Ej: Bajar 5 kilos, correr 10k, hipertrofia...">${entity.Objetivos || ''}</textarea>`
+                        },
+                        { label: 'Notas Internas', html: `<textarea id="form-notas" name="Notas" class="${inputClass}" rows="3" placeholder="Lesiones, observaciones, perfil...">${entity.Notas || ''}</textarea>` },
+                    ],
+                    handler: (e) => app.handleFormSubmit(e, 'saveClient', { ID_Cliente: entity.ID_Cliente })
+                });
+            },
+            openServiceModal: (id) => { const entity = id ? state.servicios.find(s => s.ID_Servicio === id) || {} : {}; app.openFormModal({ title: id ? 'Editar Servicio' : 'Nuevo Servicio', entity, submitText: 'Guardar', fields: [{ label: 'Nombre del Servicio', html: `<input type="text" name="NombreServicio" class="${inputClass}" value="${entity.NombreServicio || ''}" required>` }, { label: 'Precio', html: `<input type="number" step="0.01" name="Precio" class="${inputClass}" value="${entity.Precio || ''}" required>` }, { label: 'Tipo', html: `<select name="Tipo" class="${inputClass}"><option value="Mensual" ${entity.Tipo === 'Mensual' ? 'selected' : ''}>Mensual</option><option value="Trimestral" ${entity.Tipo === 'Trimestral' ? 'selected' : ''}>Trimestral</option><option value="Pack" ${entity.Tipo === 'Pack' ? 'selected' : ''}>Pack de Clases</option><option value="Clase Unica" ${entity.Tipo === 'Clase Unica' ? 'selected' : ''}>Clase Única</option></select>` }, { label: 'Descripción', html: `<textarea name="Descripcion" class="${inputClass}">${entity.Descripcion || ''}</textarea>` }], handler: (e) => app.handleFormSubmit(e, 'saveService', { ID_Servicio: entity.ID_Servicio }) }); },
+            openExpenseModal: (id) => { const entity = id ? state.gastos.find(g => g.ID_Gasto === id) || {} : {}; let categoryOptions = state.categoriasGastos.map(cat => `<option value="${cat}" ${entity.Categoria === cat ? 'selected' : ''}>${cat}</option>`).join(''); app.openFormModal({ title: id ? 'Editar Gasto' : 'Registrar Gasto', entity, submitText: 'Guardar', fields: [{ label: 'Fecha', html: `<input type="date" name="Fecha" class="${inputClass}" value="${app.toISODateString(entity.Fecha || new Date())}" required>` }, { label: 'Descripción', html: `<input type="text" name="Descripcion" class="${inputClass}" value="${entity.Descripcion || ''}" required>` }, { label: 'Monto', html: `<input type="number" step="0.01" name="Monto" class="${inputClass}" value="${entity.Monto || ''}" required>` }, { label: 'Categoría', html: `<select name="Categoria" class="${inputClass}">${categoryOptions}</select>` }, { label: 'Proveedor', html: `<input type="text" name="Proveedor" class="${inputClass}" value="${entity.Proveedor || ''}">` }], handler: (e) => app.handleFormSubmit(e, 'saveExpense', { ID_Gasto: entity.ID_Gasto }) }); },
+            openPaymentModal: (clientId, paymentId) => { let entity = paymentId ? state.pagos.find(p => p.ID_Pago === paymentId) || {} : {}; const client = state.clientes.find(c => c.ID_Cliente === clientId); if (!client) { app.showModal(dom.modals.message, "Error: No se encontró el cliente."); return; } const title = paymentId ? "Editar Ingreso" : `Registrar Pago: ${client.Nombre} ${client.Apellido}`; const serviceId = entity.ID_Servicio || client.ID_ServicioActual; let serviceOptions = state.servicios.map(s => `<option value="${s.ID_Servicio}" ${serviceId === s.ID_Servicio ? 'selected' : ''}>${s.NombreServicio} - ${app.formatCurrency(s.Precio)}</option>`).join(''); app.openFormModal({ title, entity, submitText: 'Registrar', fields: [{ label: 'Servicio Contratado', html: `<select name="ID_Servicio" class="${inputClass}" required>${serviceOptions}</select>` }, { label: 'Monto Recibido', html: `<input type="number" step="0.01" name="MontoPagado" class="${inputClass} font-bold text-amber-500 text-lg" value="${entity.MontoPagado || ''}" required>` }, { label: 'Fecha de Pago', html: `<input type="date" name="FechaPago" class="${inputClass}" value="${app.toISODateString(entity.FechaPago || new Date())}" required>` }, { label: 'Método de Pago', html: `<select name="MetodoPago" class="${inputClass}"><option value="Efectivo" ${entity.MetodoPago === 'Efectivo' ? 'selected' : ''}>Efectivo</option><option value="Transferencia" ${entity.MetodoPago === 'Transferencia' ? 'selected' : ''}>Transferencia</option><option value="MercadoPago" ${entity.MetodoPago === 'MercadoPago' ? 'selected' : ''}>Mercado Pago</option><option value="Otro" ${entity.MetodoPago === 'Otro' ? 'selected' : ''}>Otro</option></select>` }, { label: 'Extender Cuota Hasta:', html: `<input type="date" name="ProximoVencimiento" class="${inputClass}" value="${app.toISODateString(client.FechaVencimientoCuota || new Date())}" required>` }, { label: 'Observaciones', html: `<textarea name="Notas" class="${inputClass}" rows="2">${entity.Notas || ''}</textarea>` }], handler: (e) => app.handleFormSubmit(e, 'savePayment', { ID_Cliente: clientId, ID_Pago: entity.ID_Pago }) }); },
+            confirmDelete: (sheetName, idColumn, id) => { dom.confirmModalText.innerHTML = `<span class="text-red-500 font-bold block mb-2">¡ATENCIÓN!</span> ¿Estás seguro de que querés eliminar esto?<br>Esta acción no se puede deshacer.`; app.showModal(dom.modals.confirm); dom.confirmOkBtn.onclick = async () => { try { await app.postToSheet('deleteRow', { sheetName, idColumn, id }); await app.fetchInitialData(); app.renderAll(); } catch (error) { app.showModal(dom.modals.message, `Error al eliminar: ${error.message}`); } finally { app.hideModal(dom.modals.confirm); } }; },
             updateStatistics: () => {
                 const statsTypeEl = document.getElementById('stats-type'); const fromEl = document.getElementById('stats-date-from'); const toEl = document.getElementById('stats-date-to'); if (!statsTypeEl || !fromEl || !toEl) return; if (!fromEl.value || !toEl.value) return; const type = statsTypeEl.value; const from = new Date(fromEl.value + 'T00:00:00'); const to = new Date(toEl.value + 'T23:59:59'); let data, label, groupBy; if (type === 'ingresos') { data = state.pagos; label = 'Ingresos'; groupBy = 'ID_Servicio'; } else { data = state.gastos; label = 'Gastos'; groupBy = 'Categoria'; } 
                 
@@ -235,7 +380,7 @@
                     if (clientSelect && clientSelect.value !== 'all') {
                         filteredData = filteredData.filter(p => p.ID_Cliente === clientSelect.value);
                     }
-                } else { // type === 'gastos'
+                } else { 
                     const gastoCatSelect = document.getElementById('stats-gasto-cat');
                     if (gastoCatSelect && gastoCatSelect.value !== 'all') {
                         filteredData = filteredData.filter(g => g.Categoria === gastoCatSelect.value);
@@ -247,7 +392,7 @@
                     }
                 }
                 
-                const groupedData = filteredData.reduce((acc, item) => { let key; if (groupBy === 'ID_Servicio') { const service = state.servicios.find(s => s.ID_Servicio === item.ID_Servicio); key = service ? service.NombreServicio : 'Servicio Desconocido'; } else { key = item[groupBy] || 'Sin Categoría'; } acc[key] = (acc[key] || 0) + parseFloat(item.MontoPagado || item.Monto); return acc; }, {});
+                const groupedData = filteredData.reduce((acc, item) => { let key; if (groupBy === 'ID_Servicio') { const service = state.servicios.find(s => s.ID_Servicio === item.ID_Servicio); key = service ? service.NombreServicio : 'Desconocido'; } else { key = item[groupBy] || 'Sin Categoría'; } acc[key] = (acc[key] || 0) + parseFloat(item.MontoPagado || item.Monto); return acc; }, {});
                 
                 const total = filteredData.reduce((sum, item) => sum + parseFloat(item.MontoPagado || item.Monto || 0), 0);
                 const statsTotalEl = document.getElementById('stats-total');
@@ -261,23 +406,25 @@
             },
             renderChart: (labels, data, label) => {
                 const ctx = document.getElementById('stats-chart')?.getContext('2d'); if (!ctx) return; if (window.myChart) window.myChart.destroy();
+                // Premium color palette for dark mode
+                const chartColors = ['#f59e0b', '#3b82f6', '#10b981', '#8b5cf6', '#ef4444', '#ec4899', '#f97316', '#14b8a6'];
                 window.myChart = new Chart(ctx, {
                     type: 'doughnut',
-                    data: { labels, datasets: [{ label, data, backgroundColor: ['#3b82f6', '#ef4444', '#f97316', '#84cc16', '#22c55e', '#14b8a6', '#8b5cf6', '#ec4899'] }] },
+                    data: { labels, datasets: [{ label, data, backgroundColor: chartColors, borderColor: '#1f2937', borderWidth: 2 }] },
                     options: {
                         responsive: true, maintainAspectRatio: false,
+                        layout: { padding: 10 },
                         plugins: {
-                            legend: { position: 'right' },
+                            legend: { position: 'right', labels: { color: '#e5e7eb', font: { family: 'Inter', size: 12 } } },
+                            tooltip: { backgroundColor: 'rgba(17, 24, 39, 0.9)', titleColor: '#f59e0b', bodyColor: '#fff', borderColor: '#374151', borderWidth: 1, padding: 12 },
                             datalabels: {
-                                display: (context) => {
-                                    return context.dataset.data[context.dataIndex] > 0;
-                                },
+                                display: (context) => context.dataset.data[context.dataIndex] > 0,
                                 color: '#fff',
-                                borderRadius: 4,
-                                backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                                padding: 6,
+                                borderRadius: 6,
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                padding: 8,
                                 textAlign: 'center',
-                                font: { weight: 'bold', size: 11 },
+                                font: { weight: 'bold', size: 12, family: 'Inter' },
                                 formatter: (value, context) => {
                                     const dataset = context.chart.data.datasets[0];
                                     const total = dataset.data.reduce((sum, data) => sum + data, 0);
@@ -297,38 +444,36 @@
                     let clienteOptions = state.clientes.map(c => `<option value="${c.ID_Cliente}">${c.Nombre} ${c.Apellido}</option>`).join('');
                     
                     let servicioCheckboxesHtml = state.servicios.map(s => `
-                        <label class="flex items-center space-x-3 px-3 py-2 hover:bg-gray-100 cursor-pointer">
-                            <input type="checkbox" name="stats-servicio-option" value="${s.ID_Servicio}" class="stats-filter h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                            <span class="text-gray-700">${s.NombreServicio}</span>
+                        <label class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-800 cursor-pointer border-b border-gray-700/50 last:border-0 transition-colors">
+                            <input type="checkbox" name="stats-servicio-option" value="${s.ID_Servicio}" class="stats-filter h-5 w-5 rounded bg-gray-900 border-gray-600 text-amber-500 focus:ring-amber-500 focus:ring-offset-gray-800">
+                            <span class="text-gray-200 font-medium">${s.NombreServicio}</span>
                         </label>
                     `).join('');
 
                     extraFiltersHtml = `
                         <div>
-                            <label for="stats-cliente" class="block text-sm font-medium text-gray-700">Cliente</label>
-                            <select id="stats-cliente" class="stats-filter mt-1 block w-full p-2 border-gray-300 rounded-md"><option value="all">Todos</option>${clienteOptions}</select>
+                            <label for="stats-cliente" class="block text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">Cliente</label>
+                            <select id="stats-cliente" class="${inputClass}"><option value="all">Todos los clientes</option>${clienteOptions}</select>
                         </div>
                         <div class="relative">
-                            <label class="block text-sm font-medium text-gray-700">Servicios</label>
-                            <button id="stats-servicio-btn" type="button" class="mt-1 bg-white relative w-full border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                <span id="stats-servicio-text">Todos los servicios</span>
-                                <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                                    <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-                                </span>
+                            <label class="block text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">Servicios Incluidos</label>
+                            <button id="stats-servicio-btn" type="button" class="${inputClass} relative text-left cursor-default sm:text-sm flex justify-between items-center">
+                                <span id="stats-servicio-text" class="block truncate text-gray-300">Todos los servicios</span>
+                                <svg class="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
                             </button>
-                            <div id="stats-servicio-options" class="hidden absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                            <div id="stats-servicio-options" class="hidden absolute z-20 mt-2 w-full bg-gray-900 border border-gray-700 shadow-2xl max-h-60 rounded-xl overflow-auto focus:outline-none">
                                 ${servicioCheckboxesHtml}
                             </div>
                         </div>`;
                 } else {
                     let gastoCatOptions = state.categoriasGastos.map(cat => `<option value="${cat}">${cat}</option>`).join('');
-                    extraFiltersHtml = `<div><label class="block text-sm">Categoría</label><select id="stats-gasto-cat" class="stats-filter mt-1 block w-full p-2 border-gray-300 rounded-md"><option value="all">Todas</option>${gastoCatOptions}</select></div><div><label class="block text-sm">Proveedor</label><input id="stats-proveedor" type="text" placeholder="Filtrar por proveedor" class="stats-filter mt-1 block w-full p-2 border-gray-300 rounded-md"></div>`;
+                    extraFiltersHtml = `<div><label class="block text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">Categoría</label><select id="stats-gasto-cat" class="${inputClass}"><option value="all">Todas las categorías</option>${gastoCatOptions}</select></div><div><label class="block text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">Proveedor</label><input id="stats-proveedor" type="text" placeholder="Ej: Edesur, Musimundo..." class="${inputClass}"></div>`;
                 }
                 extraFiltersContainer.innerHTML = extraFiltersHtml;
                 app.addStatsFilterListeners();
                 app.updateStatistics();
             },
-            exportStatsToCSV: () => { const filteredData = app.updateStatistics(); if (!filteredData || filteredData.length === 0) { app.showModal(dom.modals.message, "No hay datos para exportar en el rango seleccionado."); return; } const type = document.getElementById('stats-type').value; let dataToExport, headers, filename; if (type === 'ingresos') { headers = ['Fecha Pago', 'Cliente', 'Servicio', 'Monto', 'Metodo Pago', 'Notas']; dataToExport = filteredData.map(p => { const cliente = state.clientes.find(c => c.ID_Cliente === p.ID_Cliente) || {}; const servicio = state.servicios.find(s => s.ID_Servicio === p.ID_Servicio) || {}; return [new Date(p.FechaPago).toLocaleDateString('es-ES'), `"${cliente.Nombre} ${cliente.Apellido}"`, `"${servicio.NombreServicio}"`, p.MontoPagado, p.MetodoPago, `"${p.Notas || ''}"`]; }); filename = `ingresos_${new Date().toISOString().split('T')[0]}.csv`; } else { headers = ['Fecha', 'Descripcion', 'Categoria', 'Proveedor', 'Monto']; dataToExport = filteredData.map(g => [new Date(g.Fecha).toLocaleDateString('es-ES'), `"${g.Descripcion}"`, `"${g.Categoria}"`, `"${g.Proveedor}"`, g.Monto]); filename = `gastos_${new Date().toISOString().split('T')[0]}.csv`; } let csvContent = "data:text/csv;charset=utf-8," + [headers.join(',')].concat(dataToExport.map(e => e.join(','))).join("\n"); var encodedUri = encodeURI(csvContent); var link = document.createElement("a"); link.setAttribute("href", encodedUri); link.setAttribute("download", filename); document.body.appendChild(link); link.click(); document.body.removeChild(link); },
+            exportStatsToCSV: () => { const filteredData = app.updateStatistics(); if (!filteredData || filteredData.length === 0) { app.showModal(dom.modals.message, "No hay datos para exportar."); return; } const type = document.getElementById('stats-type').value; let dataToExport, headers, filename; if (type === 'ingresos') { headers = ['Fecha Pago', 'Cliente', 'Servicio', 'Monto', 'Metodo Pago', 'Notas']; dataToExport = filteredData.map(p => { const cliente = state.clientes.find(c => c.ID_Cliente === p.ID_Cliente) || {}; const servicio = state.servicios.find(s => s.ID_Servicio === p.ID_Servicio) || {}; return [new Date(p.FechaPago).toLocaleDateString('es-ES'), `"${cliente.Nombre} ${cliente.Apellido}"`, `"${servicio.NombreServicio}"`, p.MontoPagado, p.MetodoPago, `"${p.Notas || ''}"`]; }); filename = `CdG_Ingresos_${new Date().toISOString().split('T')[0]}.csv`; } else { headers = ['Fecha', 'Descripcion', 'Categoria', 'Proveedor', 'Monto']; dataToExport = filteredData.map(g => [new Date(g.Fecha).toLocaleDateString('es-ES'), `"${g.Descripcion}"`, `"${g.Categoria}"`, `"${g.Proveedor}"`, g.Monto]); filename = `CdG_Gastos_${new Date().toISOString().split('T')[0]}.csv`; } let csvContent = "data:text/csv;charset=utf-8," + [headers.join(',')].concat(dataToExport.map(e => e.join(','))).join("\n"); var encodedUri = encodeURI(csvContent); var link = document.createElement("a"); link.setAttribute("href", encodedUri); link.setAttribute("download", filename); document.body.appendChild(link); link.click(); document.body.removeChild(link); },
             addDynamicListeners(tabName) {
                 if (tabName === 'clientes') { const searchInput = document.getElementById('search-cliente'); if (searchInput) searchInput.addEventListener('input', (e) => { const query = e.target.value.toLowerCase(); document.querySelectorAll('.client-card').forEach(card => { card.style.display = card.dataset.nombre.toLowerCase().includes(query) ? '' : 'none'; }); }); }
                 if (tabName === 'config') { const addCatForm = document.getElementById('add-expense-category-form'); if (addCatForm) addCatForm.addEventListener('submit', async (e) => { e.preventDefault(); const input = e.target.querySelector('input'); const newCat = input.value.trim(); if (newCat && !state.categoriasGastos.includes(newCat)) { state.categoriasGastos.push(newCat); await this.saveCategoriesToSheet(); this.renderAll(); } input.value = ''; }); }
@@ -353,7 +498,7 @@
                     }
                 }
                 if (tabName === 'asistencias') { const dateInput = document.getElementById('asistencia-date'); if(dateInput) { dateInput.addEventListener('change', () => app.renderAttendanceList(dateInput.value)); app.renderAttendanceList(dateInput.value); } }
-                if (tabName === 'caja') { app.renderCajaContent('balance'); const cajaNav = document.querySelector('[aria-label="Caja Tabs"]'); if(cajaNav) { cajaNav.addEventListener('click', (e) => { const target = e.target.closest('[data-cajatab]'); if(!target) return; document.querySelectorAll('.caja-tab-btn').forEach(b => b.classList.remove('active')); target.classList.add('active'); app.renderCajaContent(target.dataset.cajatab); }); } }
+                if (tabName === 'caja') { app.renderCajaContent('balance'); const cajaNav = document.querySelector('[aria-label="Caja Tabs"]'); if(cajaNav) { cajaNav.addEventListener('click', (e) => { const target = e.target.closest('[data-cajatab]'); if(!target) return; document.querySelectorAll('.caja-tab-btn').forEach(b => b.classList.remove('active', 'border-amber-500', 'text-amber-500', 'bg-amber-900/10')); target.classList.add('active', 'border-amber-500', 'text-amber-500', 'bg-amber-900/10'); app.renderCajaContent(target.dataset.cajatab); }); } }
             },
             addStatsFilterListeners() {
                 const serviceBtn = document.getElementById('stats-servicio-btn');
@@ -373,7 +518,7 @@
                 }
                 
                 document.body.addEventListener('click', (e) => {
-                    if (serviceOptions && !serviceBtn.contains(e.target) && !serviceOptions.contains(e.target)) {
+                    if (serviceOptions && serviceBtn && !serviceBtn.contains(e.target) && !serviceOptions.contains(e.target)) {
                         serviceOptions.classList.add('hidden');
                     }
                 }, true);
@@ -384,26 +529,42 @@
                 const selected = document.querySelectorAll('input[name="stats-servicio-option"]:checked');
                 if (selected.length === 0) {
                     serviceBtnText.textContent = 'Todos los servicios';
+                    serviceBtnText.classList.replace('text-white', 'text-gray-300');
                 } else if (selected.length === 1) {
                     serviceBtnText.textContent = state.servicios.find(s => s.ID_Servicio === selected[0].value)?.NombreServicio || '1 servicio';
+                    serviceBtnText.classList.replace('text-gray-300', 'text-white');
                 } else {
-                    serviceBtnText.textContent = `${selected.length} servicios seleccionados`;
+                    serviceBtnText.textContent = `${selected.length} servicios`;
+                    serviceBtnText.classList.replace('text-gray-300', 'text-white');
                 }
             },
-            handleDelegatedClick(e) { const target = e.target.closest('[data-action]'); if (!target) return; const { action, id, cat, filter } = target.dataset; if (app.actions[action]) { e.preventDefault(); e.stopPropagation(); app.actions[action]({ id, cat, filter }); } },
+            handleDelegatedClick(e) {
+                const target = e.target.closest('[data-action]');
+                if (!target) return;
+                const { action, id, cat, filter } = target.dataset;
+                if (app.actions[action]) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if(target.dataset.eventTarget === 'true') {
+                        app.actions[action]({ id, cat, filter, target: target });
+                    } else {
+                        app.actions[action]({ id, cat, filter });
+                    }
+                }
+            },
             applyClientFilter: (filterType) => { const now = new Date(); now.setHours(0, 0, 0, 0); const filters = { 'activos': { name: 'Activos', fn: c => c.Estado === 'Activo' }, 'expiring': { name: 'Cuotas por Vencer', fn: c => { if (c.Estado !== 'Activo' || !c.FechaVencimientoCuota) return false; const d = new Date(c.FechaVencimientoCuota); const diff = (d - now) / (1000 * 60 * 60 * 24); return diff >= 0 && diff <= 7; } }, 'expired': { name: 'Cuotas Vencidas', fn: c => c.Estado === 'Activo' && c.FechaVencimientoCuota && new Date(c.FechaVencimientoCuota) < now } }; state.clientFilter = filters[filterType]; document.querySelector('[data-tab="clientes"]').click(); },
             setupStaticListeners: () => {
-                dom.contentContainer.addEventListener('click', app.handleDelegatedClick);
+                document.body.addEventListener('click', app.handleDelegatedClick);
                 dom.tabs.forEach(tab => tab.addEventListener('click', (e) => {
                     const tabName = e.target.dataset.tab;
                     if (tabName === 'caja' && !state.cajaUnlocked) {
                         app.showModal(dom.modals.passcode);
-                        document.getElementById('passcode-input').focus();
+                        setTimeout(() => document.getElementById('passcode-input').focus(), 100);
                         return;
                     }
                     if (tabName !== 'caja') { state.cajaUnlocked = false; }
-                    dom.tabs.forEach(t => t.classList.remove('active'));
-                    e.target.classList.add('active');
+                    dom.tabs.forEach(t => t.classList.remove('active', 'border-amber-500', 'text-amber-500', 'bg-amber-900/10'));
+                    e.target.classList.add('active', 'border-amber-500', 'text-amber-500', 'bg-amber-900/10');
                     app.renderTabContent(tabName);
                 }));
                 dom.toggleSensitiveBtn.addEventListener('click', () => { state.isSensitiveHidden = !state.isSensitiveHidden; localStorage.setItem('hideSensitive', state.isSensitiveHidden); app.updateSensitiveVisibility(); });
@@ -419,8 +580,9 @@
                         dom.passcodeError.textContent = '';
                         document.querySelector('[data-tab="caja"]').click();
                     } else {
-                        dom.passcodeError.textContent = 'Código incorrecto.';
+                        dom.passcodeError.textContent = 'CÓDIGO INCORRECTO';
                         input.value = '';
+                        input.focus();
                     }
                 });
                 dom.passcodeCancelBtn.addEventListener('click', () => {
@@ -441,19 +603,24 @@
                     return localAttendanceDate === selectedDate;
                 });
                 if (attendees.length === 0) {
-                    listEl.innerHTML = `<p class="text-center text-gray-500 py-8">No hubo asistencias en esta fecha.</p>`;
+                    listEl.innerHTML = `<div class="text-center py-10 bg-gray-900/30 rounded-xl border border-gray-700/30"><svg class="w-12 h-12 text-gray-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><p class="text-gray-400 font-medium">No hay registros para este día.</p></div>`;
                     return;
                 }
-                let listHtml = '<ul class="space-y-3">';
+                let listHtml = '<ul class="grid grid-cols-1 md:grid-cols-2 gap-4">';
                 attendees
                     .sort((a, b) => new Date(a.FechaAsistencia) - new Date(b.FechaAsistencia))
                     .forEach(att => {
                         const client = state.clientes.find(c => c.ID_Cliente === att.ID_Cliente);
-                        const clientName = client ? `${client.Nombre} ${client.Apellido}` : 'Cliente no encontrado';
+                        const clientName = client ? `${client.Nombre} ${client.Apellido}` : 'Desconocido';
                         const attendanceTime = new Date(att.FechaAsistencia).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
-                        listHtml += `<li class="bg-gray-50 p-3 rounded-lg flex items-center justify-between">
-                            <span class="font-semibold text-gray-800">${clientName}</span>
-                            <span class="text-sm text-gray-500 font-mono">${attendanceTime} hs</span>
+                        listHtml += `<li class="bg-gray-900 border border-gray-700 p-4 rounded-xl flex items-center justify-between shadow-sm hover:border-amber-500/50 transition-colors">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-amber-900/30 flex items-center justify-center text-amber-500 font-bold border border-amber-700/30">
+                                    ${client ? client.Nombre.charAt(0).toUpperCase() : '?'}
+                                </div>
+                                <span class="font-bold text-gray-200">${clientName}</span>
+                            </div>
+                            <span class="text-sm text-sky-400 font-mono font-bold bg-sky-900/30 px-3 py-1 rounded-lg border border-sky-800/30">${attendanceTime}</span>
                          </li>`;
                     });
                 listHtml += '</ul>';
@@ -491,15 +658,32 @@
                 const today = app.toISODateString(new Date());
                 const firstDay = app.toISODateString(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
                 return `
-                    <h3 class="text-xl font-bold mb-4">Balance de Caja</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 items-end">
-                        <div><label for="balance-date-from" class="block text-sm font-medium">Desde</label><input type="date" id="balance-date-from" value="${firstDay}" class="caja-date-filter mt-1 block w-full p-2 border-gray-300 rounded-md"></div>
-                        <div><label for="balance-date-to" class="block text-sm font-medium">Hasta</label><input type="date" id="balance-date-to" value="${today}" class="caja-date-filter mt-1 block w-full p-2 border-gray-300 rounded-md"></div>
+                    <div class="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
+                        <h3 class="text-3xl font-extrabold text-white tracking-tight">Balance de Caja</h3>
+                        <div class="flex space-x-3 items-center bg-gray-900/50 p-2 rounded-xl border border-gray-700/50">
+                            <input type="date" id="balance-date-from" value="${firstDay}" class="bg-transparent text-gray-300 border-none focus:ring-0 text-sm font-bold uppercase tracking-wider cursor-pointer">
+                            <span class="text-amber-500 font-bold">-</span>
+                            <input type="date" id="balance-date-to" value="${today}" class="bg-transparent text-gray-300 border-none focus:ring-0 text-sm font-bold uppercase tracking-wider cursor-pointer">
+                        </div>
                     </div>
-                    <div id="balance-results" class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center mt-8">
-                        <div class="bg-green-100 p-6 rounded-2xl"><h4 class="text-green-800 font-bold">Total Ingresos</h4><p id="balance-ingresos" class="text-3xl font-bold mt-2 sensitive-data">_</p></div>
-                        <div class="bg-red-100 p-6 rounded-2xl"><h4 class="text-red-800 font-bold">Total Gastos</h4><p id="balance-gastos" class="text-3xl font-bold mt-2 sensitive-data">_</p></div>
-                        <div class="bg-blue-100 p-6 rounded-2xl"><h4 class="text-blue-800 font-bold">Balance Neto</h4><p id="balance-neto" class="text-3xl font-bold mt-2 sensitive-data">_</p></div>
+                    <div id="balance-results" class="grid grid-cols-1 lg:grid-cols-3 gap-6 text-center mt-4">
+                        <div class="bg-gray-900 border border-gray-700 p-8 rounded-2xl shadow-xl relative overflow-hidden">
+                            <div class="absolute top-0 right-0 -mr-4 -mt-4 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl"></div>
+                            <h4 class="text-emerald-500 font-bold uppercase tracking-widest text-xs mb-2">Total Ingresos</h4>
+                            <p id="balance-ingresos" class="text-4xl font-black text-white sensitive-data drop-shadow-md">_</p>
+                        </div>
+                        <div class="bg-gray-900 border border-gray-700 p-8 rounded-2xl shadow-xl relative overflow-hidden">
+                            <div class="absolute top-0 right-0 -mr-4 -mt-4 w-24 h-24 bg-red-500/10 rounded-full blur-2xl"></div>
+                            <h4 class="text-red-500 font-bold uppercase tracking-widest text-xs mb-2">Total Gastos</h4>
+                            <p id="balance-gastos" class="text-4xl font-black text-white sensitive-data drop-shadow-md">_</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-amber-600 to-yellow-700 border border-amber-500 p-8 rounded-2xl shadow-2xl shadow-amber-900/20 transform hover:-translate-y-1 transition-transform relative overflow-hidden">
+                            <div class="absolute inset-0 bg-white/5 backdrop-blur-sm"></div>
+                            <div class="relative z-10">
+                                <h4 class="text-amber-100 font-bold uppercase tracking-widest text-xs mb-2">Balance Neto</h4>
+                                <p id="balance-neto" class="text-5xl font-black text-gray-900 sensitive-data drop-shadow-sm">_</p>
+                            </div>
+                        </div>
                     </div>`;
             },
             calculateBalance() {
@@ -536,14 +720,17 @@
 
                 const filteredPagos = state.pagos.filter(p => { const d = new Date(p.FechaPago); return d >= from && d <= to; });
 
-                let c = `<h2 class="text-2xl font-bold mb-4">Historial de Ingresos</h2>
-                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 items-end">
-                            <div><label for="ingresos-date-from" class="block text-sm font-medium">Desde</label><input type="date" id="ingresos-date-from" value="${fromDate}" class="caja-date-filter mt-1 block w-full p-2 border-gray-300 rounded-md"></div>
-                            <div><label for="ingresos-date-to" class="block text-sm font-medium">Hasta</label><input type="date" id="ingresos-date-to" value="${toDate}" class="caja-date-filter mt-1 block w-full p-2 border-gray-300 rounded-md"></div>
+                let c = `<div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+                            <h2 class="text-3xl font-extrabold text-white tracking-tight">Ingresos</h2>
+                            <div class="flex space-x-2 items-center bg-gray-900/50 p-2 rounded-xl border border-gray-700/50 w-full sm:w-auto">
+                                <input type="date" id="ingresos-date-from" value="${fromDate}" class="bg-transparent text-gray-300 border-none focus:ring-0 text-sm font-bold uppercase tracking-wider cursor-pointer w-full">
+                                <span class="text-amber-500 font-bold">-</span>
+                                <input type="date" id="ingresos-date-to" value="${toDate}" class="bg-transparent text-gray-300 border-none focus:ring-0 text-sm font-bold uppercase tracking-wider cursor-pointer w-full">
+                            </div>
                          </div>
-                         <div class="overflow-x-auto"><table class="w-full text-left"><thead><tr class="border-b"><th class="p-3">Fecha</th><th class="p-3">Cliente</th><th class="p-3">Servicio</th><th class="p-3">Monto</th><th class="p-3 text-right">Acciones</th></tr></thead><tbody>`;
-                if (filteredPagos.length === 0) c += '<tr><td colspan="5" class="text-center text-gray-500 p-6">No hay pagos registrados en este período.</td></tr>';
-                filteredPagos.sort((a, b) => new Date(b.FechaPago) - new Date(a.FechaPago)).forEach(p => { const cliente = state.clientes.find(cli => cli.ID_Cliente === p.ID_Cliente); const servicio = state.servicios.find(s => s.ID_Servicio === p.ID_Servicio); c += `<tr class="border-b"><td class="p-3">${new Date(p.FechaPago).toLocaleDateString('es-ES')}</td><td class="p-3 font-semibold">${cliente ? `${cliente.Nombre} ${cliente.Apellido}` : 'Cliente no encontrado'}</td><td class="p-3">${servicio ? servicio.NombreServicio : 'Servicio no encontrado'}</td><td class="p-3 sensitive-data">${app.formatCurrency(p.MontoPagado)}</td><td class="p-3 text-right"><button data-action="openPaymentModal" data-id="${p.ID_Pago}" class="text-blue-600 hover:underline">Editar</button><button data-action="deletePayment" data-id="${p.ID_Pago}" class="text-red-600 hover:underline ml-4">Borrar</button></td></tr>`; }); c += `</tbody></table></div>`; return c;
+                         <div class="bg-gray-900 rounded-2xl border border-gray-700 overflow-hidden shadow-xl"><div class="overflow-x-auto"><table class="w-full text-left border-collapse"><thead><tr class="bg-gray-950 border-b border-gray-700"><th class="p-4 text-gray-400 uppercase text-xs font-bold tracking-wider">Fecha</th><th class="p-4 text-gray-400 uppercase text-xs font-bold tracking-wider">Cliente</th><th class="p-4 text-gray-400 uppercase text-xs font-bold tracking-wider">Servicio</th><th class="p-4 text-gray-400 uppercase text-xs font-bold tracking-wider">Monto</th><th class="p-4 text-right text-gray-400 uppercase text-xs font-bold tracking-wider">Acciones</th></tr></thead><tbody>`;
+                if (filteredPagos.length === 0) c += '<tr><td colspan="5" class="text-center text-gray-500 p-8 text-lg font-medium">No hay ingresos registrados en este período.</td></tr>';
+                filteredPagos.sort((a, b) => new Date(b.FechaPago) - new Date(a.FechaPago)).forEach(p => { const cliente = state.clientes.find(cli => cli.ID_Cliente === p.ID_Cliente); const servicio = state.servicios.find(s => s.ID_Servicio === p.ID_Servicio); c += `<tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors"><td class="p-4 text-gray-300 font-medium">${new Date(p.FechaPago).toLocaleDateString('es-ES')}</td><td class="p-4 font-bold text-gray-100">${cliente ? `${cliente.Nombre} ${cliente.Apellido}` : 'Desconocido'}</td><td class="p-4 text-gray-400 text-sm">${servicio ? servicio.NombreServicio : '-'}</td><td class="p-4 text-emerald-400 font-mono font-bold sensitive-data">${app.formatCurrency(p.MontoPagado)}</td><td class="p-4 text-right"><button data-action="openPaymentModal" data-id="${p.ID_Pago}" class="text-sky-500 hover:text-sky-400 font-bold transition-colors">Editar</button><button data-action="deletePayment" data-id="${p.ID_Pago}" class="text-red-500 hover:text-red-400 font-bold ml-4 transition-colors">Borrar</button></td></tr>`; }); c += `</tbody></table></div></div>`; return c;
             },
             renderGastosTable() {
                 const today = app.toISODateString(new Date());
@@ -556,14 +743,18 @@
 
                 const filteredGastos = state.gastos.filter(g => { const d = new Date(g.Fecha); return d >= from && d <= to; });
 
-                let c = `<div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold">Historial de Gastos</h2><button data-action="openExpenseModal" class="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600">Agregar Gasto</button></div>
-                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 items-end">
-                            <div><label for="gastos-date-from" class="block text-sm font-medium">Desde</label><input type="date" id="gastos-date-from" value="${fromDate}" class="caja-date-filter mt-1 block w-full p-2 border-gray-300 rounded-md"></div>
-                            <div><label for="gastos-date-to" class="block text-sm font-medium">Hasta</label><input type="date" id="gastos-date-to" value="${toDate}" class="caja-date-filter mt-1 block w-full p-2 border-gray-300 rounded-md"></div>
+                let c = `<div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+                            <h2 class="text-3xl font-extrabold text-white tracking-tight">Gastos</h2>
+                            <div class="flex space-x-2 items-center bg-gray-900/50 p-2 rounded-xl border border-gray-700/50 w-full sm:w-auto">
+                                <input type="date" id="gastos-date-from" value="${fromDate}" class="bg-transparent text-gray-300 border-none focus:ring-0 text-sm font-bold uppercase tracking-wider cursor-pointer w-full">
+                                <span class="text-amber-500 font-bold">-</span>
+                                <input type="date" id="gastos-date-to" value="${toDate}" class="bg-transparent text-gray-300 border-none focus:ring-0 text-sm font-bold uppercase tracking-wider cursor-pointer w-full">
+                            </div>
+                            <button data-action="openExpenseModal" class="bg-red-600 text-white font-bold py-3 px-5 rounded-xl hover:bg-red-500 transition-colors shrink-0 shadow-lg shadow-red-900/20 w-full sm:w-auto">Registrar Gasto</button>
                          </div>
-                         <div class="overflow-x-auto"><table class="w-full text-left"><thead><tr class="border-b"><th class="p-3">Fecha</th><th class="p-3">Descripción</th><th class="p-3">Categoría</th><th class="p-3">Monto</th><th class="p-3 text-right">Acciones</th></tr></thead><tbody>`;
-                if (filteredGastos.length === 0) c += '<tr><td colspan="5" class="text-center text-gray-500 p-6">No hay gastos cargados en este período.</td></tr>';
-                filteredGastos.sort((a, b) => new Date(b.Fecha) - new Date(a.Fecha)).forEach(g => { c += `<tr class="border-b"><td class="p-3">${new Date(g.Fecha).toLocaleDateString('es-ES')}</td><td class="p-3 font-semibold">${g.Descripcion}</td><td class="p-3">${g.Categoria}</td><td class="p-3 sensitive-data">${app.formatCurrency(g.Monto)}</td><td class="p-3 text-right"><button data-action="openExpenseModal" data-id="${g.ID_Gasto}" class="text-blue-600 hover:underline">Editar</button><button data-action="deleteExpense" data-id="${g.ID_Gasto}" class="text-red-600 hover:underline ml-4">Borrar</button></td></tr>`; }); c += `</tbody></table></div>`; return c;
+                         <div class="bg-gray-900 rounded-2xl border border-gray-700 overflow-hidden shadow-xl"><div class="overflow-x-auto"><table class="w-full text-left border-collapse"><thead><tr class="bg-gray-950 border-b border-gray-700"><th class="p-4 text-gray-400 uppercase text-xs font-bold tracking-wider">Fecha</th><th class="p-4 text-gray-400 uppercase text-xs font-bold tracking-wider">Descripción</th><th class="p-4 text-gray-400 uppercase text-xs font-bold tracking-wider">Categoría</th><th class="p-4 text-gray-400 uppercase text-xs font-bold tracking-wider">Monto</th><th class="p-4 text-right text-gray-400 uppercase text-xs font-bold tracking-wider">Acciones</th></tr></thead><tbody>`;
+                if (filteredGastos.length === 0) c += '<tr><td colspan="5" class="text-center text-gray-500 p-8 text-lg font-medium">No hay gastos registrados en este período.</td></tr>';
+                filteredGastos.sort((a, b) => new Date(b.Fecha) - new Date(a.Fecha)).forEach(g => { c += `<tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors"><td class="p-4 text-gray-300 font-medium">${new Date(g.Fecha).toLocaleDateString('es-ES')}</td><td class="p-4 font-bold text-gray-100">${g.Descripcion}</td><td class="p-4"><span class="px-2 py-1 bg-gray-800 rounded-md text-xs text-amber-500 border border-amber-900/30">${g.Categoria}</span></td><td class="p-4 text-red-400 font-mono font-bold sensitive-data">${app.formatCurrency(g.Monto)}</td><td class="p-4 text-right"><button data-action="openExpenseModal" data-id="${g.ID_Gasto}" class="text-sky-500 hover:text-sky-400 font-bold transition-colors">Editar</button><button data-action="deleteExpense" data-id="${g.ID_Gasto}" class="text-red-500 hover:text-red-400 font-bold ml-4 transition-colors">Borrar</button></td></tr>`; }); c += `</tbody></table></div></div>`; return c;
             }
         };
 
@@ -594,18 +785,18 @@
             },
             sendWhatsAppReminder: ({id}) => {
                 const client = state.clientes.find(c => c.ID_Cliente === id);
-                if (!client || !client.Celular) {
-                    app.showModal(dom.modals.message, "Este cliente no tiene un número de celular cargado.");
+                if (!client || !String(client.Celular || '').trim()) {
+                    app.showModal(dom.modals.message, "Atención: Este atleta no tiene un número de celular válido registrado.");
                     return;
                 }
                 const phone = String(client.Celular || '').replace(/[^0-9]/g, '');
                 if (phone === '') {
-                    app.showModal(dom.modals.message, "El número de celular cargado no es válido.");
+                    app.showModal(dom.modals.message, "El formato del celular es inválido.");
                     return;
                 }
                 const fullPhone = phone.length > 8 ? phone : `549${phone}`;
                 const dueDate = new Date(client.FechaVencimientoCuota).toLocaleDateString('es-ES');
-                const message = encodeURIComponent(`Hola ${client.Nombre}, ¿cómo estás? Te escribo de parte de "Coronados de Gloria" para recordarte que tu cuota vence el día ${dueDate}. ¡Que tengas un excelente día!`);
+                const message = encodeURIComponent(`Hola ${client.Nombre}, ¿cómo estás? Te escribo de parte de *Coronados de Gloria* para avisarte que tu cuota vence el día ${dueDate}.\n\n¡Sigamos entrenando inteligente! Que tengas un excelente día.`);
                 const url = `https://wa.me/${fullPhone}?text=${message}`;
                 window.open(url, '_blank');
             },
@@ -617,6 +808,84 @@
                     app.renderTabContent('estadisticas');
                 }
             },
+            generateAIObjectives: async ({ target }) => {
+                const button = target;
+                const objectivesTextarea = document.getElementById('form-objetivos');
+                const notesTextarea = document.getElementById('form-notas');
+                const userInput = objectivesTextarea.value;
+
+                if (!userInput.trim()) {
+                    app.showModal(dom.modals.message, 'Escribí una idea principal (ej: "Aumentar masa muscular") en el cuadro antes de pedirle ayuda a la IA.');
+                    return;
+                }
+                
+                button.classList.add('btn-loading');
+                button.disabled = true;
+
+                try {
+                    const prompt = `Sos un entrenador personal experto y motivador del gimnasio "Coronados de Gloria". Un nuevo atleta te dice que su objetivo principal es "${userInput}". Basado en eso, generá un párrafo corto para el campo 'Objetivos' y otro párrafo corto para el campo 'Notas'.
+
+                    - En 'Objetivos', detallá 2 o 3 metas SMART (específicas, medibles, alcanzables, relevantes, con plazo).
+                    - En 'Notas', agregá un breve mensaje de bienvenida y motivación, y una recomendación inicial clave (ej. constancia, hidratación, descanso).
+                    - Separar ambos párrafos estrictamente con los caracteres '---'.
+                    - El tono debe ser profesional, cercano y alentador.
+                    - Sé conciso y directo.
+                    `;
+
+                    const payload = { contents: [{ parts: [{ text: prompt }] }] };
+                    const apiKey = "";
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+                    
+                    let response;
+                    let retries = 5;
+                    let delay = 1000;
+                    
+                    for (let i = 0; i < retries; i++) {
+                        try {
+                            response = await fetch(apiUrl, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(payload)
+                            });
+                            if (response.ok) break;
+                        } catch (e) {
+                            if (i === retries - 1) throw e;
+                        }
+                        if (i < retries - 1) {
+                            await new Promise(res => setTimeout(res, delay));
+                            delay *= 2;
+                        }
+                    }
+                    
+                    if (!response || !response.ok) {
+                        throw new Error("No se pudo conectar con la Inteligencia Artificial. Revisá tu conexión a internet e intentá nuevamente.");
+                    }
+
+                    const result = await response.json();
+                    
+                    const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                    
+                    if (text) {
+                        const parts = text.split('---').map(s => s.trim());
+                        const generatedObjectives = parts[0] || '';
+                        const generatedNotes = parts[1] || '';
+                        
+                        if (generatedObjectives) {
+                            objectivesTextarea.value = generatedObjectives;
+                        }
+                        if (generatedNotes) {
+                            notesTextarea.value = generatedNotes;
+                        }
+                    } else {
+                        throw new Error("La respuesta de la IA no fue válida.");
+                    }
+                } catch (error) {
+                    app.showModal(dom.modals.message, `Oops: ${error.message}`);
+                } finally {
+                    button.classList.remove('btn-loading');
+                    button.disabled = false;
+                }
+            }
         };
 
         app.init();
